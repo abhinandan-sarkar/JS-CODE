@@ -1,0 +1,72 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+<script>
+
+//loading time function....
+$(window).on("load", function() {
+ $(".modal").hide();
+ });
+
+$(function () {
+  const modal = $(".modal");
+  const modalImg = $(".picture");
+  const modalText = $(".img-text");
+  const btnPrev = $(".pre");
+  const btnNext = $(".next");
+  const btnClose = $("#cross");
+
+  let images = [];
+  let currentIndex = -1;
+
+  // Collect all images except the modal preview image
+  $("img").each(function () {
+    if (!$(this).hasClass("picture")) {
+      images.push({
+        src: $(this).attr("src"),
+        alt: $(this).attr("alt")
+      });
+    }
+  });
+
+  // Function to display an image in the modal
+  function showImage(index) {
+    if (index >= 0 && index < images.length) {
+      modalImg.attr("src", images[index].src);
+      modalText.text(images[index].alt);
+    }
+  }
+
+  // Handle image click to open modal
+  $("img").click(function () {
+    if (!$(this).hasClass("picture")) {
+      const clickedSrc = $(this).attr("src");
+      currentIndex = images.findIndex(img => img.src === clickedSrc);
+      showImage(currentIndex);
+      modal.show();
+    }
+  });
+
+  // Close modal
+  btnClose.click(function () {
+    modalImg.attr("src", "");
+    modalText.text("");
+    modal.hide();
+  });
+
+  // Previous button (loop to last if first)
+  btnPrev.click(function () {
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    showImage(currentIndex);
+  });
+
+  // Next button (loop to first if last)
+  btnNext.click(function () {
+    currentIndex = (currentIndex + 1) % images.length;
+    showImage(currentIndex);
+  });
+
+  // Hide modal on load
+  $(window).on("load", function () {
+    modal.hide();
+  });
+});
