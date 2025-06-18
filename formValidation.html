@@ -1,0 +1,177 @@
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+
+<script>
+    $(function () {
+
+      
+      // --- Custom Validation Methods ---
+      $.validator.addMethod("lettersOnly", function (value, element) {
+        return this.optional(element) ||/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(value.trim());
+      }, "Only letters allowed.");
+
+      $.validator.addMethod("numbersOnly", function (value, element) {
+        return this.optional(element) || /^[0-9]+$/.test(value.trim());
+      }, "Only digits are allowed.");
+
+      $.validator.addMethod("validDate", function (value, element) {
+        if (this.optional(element)) return true;
+        const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
+        if (!match) return false;
+        const d = parseInt(match[1], 10),
+          m = parseInt(match[2], 10) - 1,
+          y = parseInt(match[3], 10);
+        const date = new Date(y, m, d);
+        return date.getFullYear() === y && date.getMonth() === m && date.getDate() === d;
+      }, "Please enter a valid date (DD/MM/YYYY).");
+
+      // --- Form Validation ---
+      const validator = $("form[name='register']").validate({
+        rules: {
+          sname: { required: true, lettersOnly: true },
+          pob: { required: true, lettersOnly: true },
+          fname: { required: true, lettersOnly: true },
+          mname: { required: true, lettersOnly: true },
+          resiAdd: { required: true, minlength: 10 },
+          city: { required: true, lettersOnly: true },
+          state: { required: true, lettersOnly: true },
+          lastSchoolAdd: { required: true, minlength: 10 },
+          chNo: { required: true, numbersOnly: true },
+          pincode: { required: true, minlength: 6, numbersOnly: true },
+          phone: { required: true, minlength: 10, numbersOnly: true },
+          phoneO: { required: true, minlength: 10, numbersOnly: true },
+          email: { required: true, email: true },
+          focc: { required: true },
+          oAdd: { required: true, minlength: 10 },
+          lGuardian: { required: true, lettersOnly: true },
+          nationality: { required: true, lettersOnly: true },
+          lastSchool: { required: true, lettersOnly: true },
+          rank: { required: true, numbersOnly: true },
+
+
+          // CASH
+          cashAmount: {
+            required: function () {
+              return $("input[name='payment']:checked").val() === "CASH";
+            },
+            numbersOnly: true
+          },
+
+          //  CHEQUE
+          chdate: {
+            required: function () {
+              return $("input[name='payment']:checked").val() === "CHEQUE";
+            },
+            validDate: true
+          },
+          bankName: {
+            required: function () {
+              return $("input[name='payment']:checked").val() === "CHEQUE";
+            },
+            lettersOnly: true
+          },
+          chBranch: {
+            required: function () {
+              return $("input[name='payment']:checked").val() === "CHEQUE";
+            },
+            lettersOnly: true
+          },
+          chAmount: {
+            required: function () {
+              return $("input[name='payment']:checked").val() === "CHEQUE";
+            },
+            numbersOnly: true
+          },
+
+          //DD
+          ddno: {
+            required: function () {
+              return $("input[name='payment']:checked").val() === "DD";
+            },
+            numbersOnly: true
+          },
+          dd: {
+            required: function () {
+              return $("input[name='payment']:checked").val() === "DD";
+            },
+            lettersOnly: true
+          },
+          ddDate: {
+            required: function () {
+              return $("input[name='payment']:checked").val() === "DD";
+            },
+            validDate: true
+          },
+          ddBank: {
+            required: function () {
+              return $("input[name='payment']:checked").val() === "DD";
+            },
+            lettersOnly: true
+          },
+          ddName: {
+            required: function () {
+              return $("input[name='payment']:checked").val() === "DD";
+            },
+            lettersOnly: true
+          },
+          ddBranch: {
+            required: function () {
+              return $("input[name='payment']:checked").val() === "DD";
+            },
+            lettersOnly: true
+          },
+          ddAmount: {
+            required: function () {
+              return $("input[name='payment']:checked").val() === "DD";
+            },
+            numbersOnly: true
+          }
+
+        },
+
+        messages: {
+          // for custom massage...
+        },
+
+        errorPlacement: function () {
+          return false;
+        },
+
+        showErrors: function (errorMap, errorList) {
+          $("small.error").html('');
+          for (let name in errorMap) {
+            $(`small[for="${name}"]`).html(errorMap[name]);
+          }
+        },
+
+        submitHandler: function (form) {
+          form.submit();
+        },
+
+      });
+
+      // --- Payment Radio Logic ---
+      const cash = document.querySelectorAll('.cash-payment');
+      const cheque = document.querySelectorAll('.cheque-payment');
+      const dd = document.querySelectorAll('.dd-payment');
+
+      function resetFields(group, enable) {
+        group.forEach(el => {
+          el.disabled = !enable;
+          if (!enable) {
+            el.value = "";
+            $(`small[for="${el.name}"]`).html('');
+          }
+        });
+      }
+
+      $("input[name='payment']").on("change", function () {
+        const value = this.value;
+        resetFields(cash, value === "CASH");
+        resetFields(cheque, value === "CHEQUE");
+        resetFields(dd, value === "DD");
+      });
+    });
+
+  </script>
