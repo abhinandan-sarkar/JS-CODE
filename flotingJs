@@ -1,0 +1,12 @@
+let para=document.getElementById('para');
+let paraHeight=para.getClientRects()[0].height;
+let paraLength=para.innerText.length;
+let startingIndex=0;
+let html=`<div style='float:right; height:clamp(${paraHeight}px,0px,230px); max-height:230px; width:150px; display:block;'></div>`
+function floatFixing(number){
+    para.innerHTML=para.innerText.substring(startingIndex,paraLength-number)+html+para.innerText.substring(paraLength-number);
+
+}
+
+
+getPara(1600);
